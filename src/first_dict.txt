@@ -1,0 +1,7 @@
+nine=девять
+cats=коты
+test=тест
+Test=Значение
+word=слово
+five=пять
+home=дом
