@@ -1,16 +1,34 @@
 package org.example.dictionary;
 
 import org.springframework.stereotype.Service;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.stream.Collectors;
 
-@Service
+@Service("thirdDictionaryService")
 public class ThirdDictionary extends AbstractDictionaryService {
     public ThirdDictionary() {
-        super("second_dict.txt");
+        //super(loadDictionaryFromResources("third_dict.txt"));
+        super("third_dict.txt");
     }
 
     @Override
     protected boolean isValidKey(String key) {
-        // Ключ должен состоять ровно из 4 латинских букв
         return key.matches("^[a-z#]+$");
     }
+
+    /*private static String loadDictionaryFromResources(String fileName) {
+        try (InputStream inputStream = FirstDictionary.class.getClassLoader().getResourceAsStream(fileName)) {
+            if (inputStream == null) {
+                throw new RuntimeException("Файл словаря не найден: " + fileName);
+            }
+            return new BufferedReader(new InputStreamReader(inputStream))
+                    .lines()
+                    .collect(Collectors.joining("\n"));
+        } catch (IOException e) {
+            throw new RuntimeException("Ошибка загрузки словаря: " + fileName, e);
+        }
+    }*/
 }

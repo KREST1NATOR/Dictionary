@@ -11,3 +11,4 @@ public interface DictionaryService {
     List<String> readPage(int page, int size);
     void exportToXml(OutputStream outputStream);
 }
+

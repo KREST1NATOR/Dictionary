@@ -1,30 +1,53 @@
 package org.example.dictionary;
 
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
 import java.io.*;
-import java.util.*;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.xml.stream.*;
 
 public abstract class AbstractDictionaryService implements DictionaryService {
-    protected final File file;
+    protected final String resourcePath; // Путь к файлу в ресурсах
+    //String resourcePath = "first_dict.txt";
+    protected final File tempFile; // Временный файл для записи
+    protected abstract boolean isValidKey(String key);
 
-    public AbstractDictionaryService(String filePath) {
-        this.file = new File(filePath);
+    public AbstractDictionaryService(String resourcePath) {
+        this.resourcePath = resourcePath;
+        this.tempFile = createTempFileFromResource();
     }
 
-    // Метод валидации ключа для конкретного словаря
-    protected abstract boolean isValidKey(String key);
+    // Копируем ресурс в temp-файл, чтобы с ним можно было работать
+    private File createTempFileFromResource() {
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(resourcePath)) {
+            if (inputStream == null) {
+                throw new IllegalArgumentException("Resource file not found: " + resourcePath);
+            }
+            File tempFile = File.createTempFile("dictionary", ".txt");
+            tempFile.deleteOnExit();
+
+            try (OutputStream outputStream = new FileOutputStream(tempFile)) {
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+            }
+            return tempFile;
+        } catch (IOException e) {
+            throw new RuntimeException("Error copying resource to temp file", e);
+        }
+    }
 
     @Override
     public Optional<String> searchEntry(String key) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(tempFile))) {
             return reader.lines()
                     .filter(line -> line.startsWith(key + "="))
                     .findFirst()
-                    .map(line -> {
-                        String[] parts = line.split("=", 2);
-                        return parts.length == 2 ? parts[1] : null;
-                    });
+                    .map(line -> line.split("=", 2)[1]);
         } catch (IOException e) {
             throw new RuntimeException("Error reading dictionary file", e);
         }
@@ -35,7 +58,7 @@ public abstract class AbstractDictionaryService implements DictionaryService {
         if (!isValidKey(key) || searchEntry(key).isPresent()) {
             return false;
         }
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile, true))) {
             writer.write(key + "=" + value);
             writer.newLine();
             return true;
@@ -46,10 +69,10 @@ public abstract class AbstractDictionaryService implements DictionaryService {
 
     @Override
     public boolean deleteEntry(String key) {
-        File tempFile = new File(file.getAbsolutePath() + ".tmp");
+        File newTempFile = new File(tempFile.getAbsolutePath() + ".tmp");
         boolean deleted = false;
-        try (BufferedReader reader = new BufferedReader(new FileReader(file));
-             BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(tempFile));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(newTempFile))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 if (!line.startsWith(key + "=")) {
@@ -63,11 +86,8 @@ public abstract class AbstractDictionaryService implements DictionaryService {
             throw new RuntimeException("Error modifying dictionary file", e);
         }
         if (deleted) {
-            if (!file.delete()) {
-                throw new RuntimeException("Could not delete original file");
-            }
-            if (!tempFile.renameTo(file)) {
-                throw new RuntimeException("Could not rename temp file");
+            if (!tempFile.delete() || !newTempFile.renameTo(tempFile)) {
+                throw new RuntimeException("Could not update dictionary file");
             }
         }
         return deleted;
@@ -75,7 +95,7 @@ public abstract class AbstractDictionaryService implements DictionaryService {
 
     @Override
     public List<String> readPage(int page, int size) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(tempFile))) {
             return reader.lines()
                     .skip((long) (page - 1) * size)
                     .limit(size)
@@ -87,7 +107,7 @@ public abstract class AbstractDictionaryService implements DictionaryService {
 
     @Override
     public void exportToXml(OutputStream outputStream) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(tempFile))) {
             XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter(outputStream);
             writer.writeStartDocument("1.0");
             writer.writeStartElement("dictionary");
@@ -115,3 +135,5 @@ public abstract class AbstractDictionaryService implements DictionaryService {
         }
     }
 }
+
+
