@@ -22,6 +22,7 @@ public class DictionaryController {
     private final DictionaryService firstDictionaryService;
     private final DictionaryService secondDictionaryService;
     private final DictionaryService thirdDictionaryService;
+    private final DictionaryService databaseDictionaryService;
     private final MessageSource messageSource;
     private final LocaleResolver localeResolver;
 
@@ -43,11 +44,13 @@ public class DictionaryController {
             @Qualifier("firstDictionaryService") DictionaryService firstDictionaryService,
             @Qualifier("secondDictionaryService") DictionaryService secondDictionaryService,
             @Qualifier("thirdDictionaryService") DictionaryService thirdDictionaryService,
+            @Qualifier("databaseDictionaryService") DictionaryService databaseDictionaryService,
             MessageSource messageSource,
             LocaleResolver localeResolver) {
         this.firstDictionaryService = firstDictionaryService;
         this.secondDictionaryService = secondDictionaryService;
         this.thirdDictionaryService = thirdDictionaryService;
+        this.databaseDictionaryService = databaseDictionaryService;
         this.messageSource = messageSource;
         this.localeResolver = localeResolver;
     }
@@ -57,17 +60,15 @@ public class DictionaryController {
             case "first" -> firstDictionaryService;
             case "second" -> secondDictionaryService;
             case "third" -> thirdDictionaryService;
+            case "db" -> databaseDictionaryService;
             default -> null;
         };
     }
 
     @GetMapping("/search")
     public ResponseEntity<String> search(@RequestParam String type, @RequestParam String key) {
-        logger.info("Searching for key: {} in dictionary type: {}", key, type);
-
         DictionaryService dictionaryService = getDictionaryService(type);
         if (dictionaryService == null) {
-            logger.error("Invalid dictionary type: {}", type);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid dictionary type");
         }
 

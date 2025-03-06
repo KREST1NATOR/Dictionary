@@ -1,16 +1,11 @@
 package org.example.dictionary;
 
 import org.springframework.stereotype.Service;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @Service("firstDictionaryService")
 public class FirstDictionary extends AbstractDictionaryService {
     public FirstDictionary() {
-        //super(loadDictionaryFromResources("first_dict.txt"));
         super("first_dict.txt");
     }
 
@@ -19,16 +14,9 @@ public class FirstDictionary extends AbstractDictionaryService {
         return key.matches("^[A-Za-z]{4}$");
     }
 
-    /*private static String loadDictionaryFromResources(String fileName) {
-        try (InputStream inputStream = FirstDictionary.class.getClassLoader().getResourceAsStream(fileName)) {
-            if (inputStream == null) {
-                throw new RuntimeException("Файл словаря не найден: " + fileName);
-            }
-            return new BufferedReader(new InputStreamReader(inputStream))
-                    .lines()
-                    .collect(Collectors.joining("\n"));
-        } catch (IOException e) {
-            throw new RuntimeException("Ошибка загрузки словаря: " + fileName, e);
-        }
-    }*/
+    @Override
+    public List<String> readPage(int page, int size, String key, String value) {
+        // Заглушка или делегирование вызова другому сервису
+        return readPage(page, size);
+    }
 }
