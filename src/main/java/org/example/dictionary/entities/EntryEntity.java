@@ -3,52 +3,51 @@ package org.example.dictionary.entities;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "entry")
 public class EntryEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "dictionary_id")
-    private DictionaryEntity dictionary;
+    //@Column(nullable = false)
+    //private Long idDictionary;
 
+    @Column(nullable = false)
     private String key;
 
+    @Column(nullable = false)
     private String value;
 
-    private boolean deleted;
+    @ManyToOne
+    @JoinColumn(name = "dictionary_id", nullable = false)
+    private DictionaryEntity dictionary;
 
-    // Геттер для value
+    public EntryEntity() {
+    }
+
+    public EntryEntity(DictionaryEntity dictionary, String key, String value) {
+        this.dictionary = dictionary;
+        this.key = key;
+        this.value = value;
+    }
+
     public String getValue() {
         return value;
     }
 
-    // Сеттер для value
     public void setValue(String value) {
         this.value = value;
     }
 
-    // Геттер для key
     public String getKey() {
         return key;
     }
 
-    // Сеттер для key
     public void setKey(String key) {
         this.key = key;
     }
 
-    // Геттер и сеттер для deleted
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    // Геттер и сеттер для dictionary
     public DictionaryEntity getDictionary() {
         return dictionary;
     }

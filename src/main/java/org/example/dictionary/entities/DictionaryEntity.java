@@ -3,17 +3,21 @@ package org.example.dictionary.entities;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "dictionary")
 public class DictionaryEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String name;
 
+    @Column(nullable = false)
     private String validationRule;
 
-    private boolean deleted;
+    @Column(nullable = false)
+    private boolean deleted = false;
 
     // Геттер и сеттер для id
     public Long getId() {
@@ -42,7 +46,6 @@ public class DictionaryEntity {
         this.validationRule = validationRule;
     }
 
-    // Геттер и сеттер для deleted
     public boolean isDeleted() {
         return deleted;
     }

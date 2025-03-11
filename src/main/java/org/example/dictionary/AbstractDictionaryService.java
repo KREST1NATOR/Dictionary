@@ -53,7 +53,7 @@ public abstract class AbstractDictionaryService implements DictionaryService {
         }
     }
 
-    @Override
+    /*@Override
     public boolean addEntry(String key, String value) {
         if (!isValidKey(key) || searchEntry(key).isPresent()) {
             return false;
@@ -65,7 +65,7 @@ public abstract class AbstractDictionaryService implements DictionaryService {
         } catch (IOException e) {
             throw new RuntimeException("Error writing to dictionary file", e);
         }
-    }
+    }*/
 
     @Override
     public boolean deleteEntry(String key) {

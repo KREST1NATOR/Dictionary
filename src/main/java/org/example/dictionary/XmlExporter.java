@@ -1,7 +1,6 @@
 package org.example.dictionary;
 
 import java.io.*;
-import java.util.stream.Collectors;
 
 public class XmlExporter {
     public static String exportToXml(File file) {
