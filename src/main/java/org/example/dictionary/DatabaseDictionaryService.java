@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -57,6 +58,7 @@ public class DatabaseDictionaryService implements DictionaryService {
     }
 
     @Override
+    @Transactional
     public boolean deleteEntry(String key) {
         if (!entryRepository.existsByKey(key)) {
             return false;

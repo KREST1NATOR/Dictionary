@@ -105,6 +105,8 @@ public class DictionaryController {
      */
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteEntry(@RequestParam String type, @RequestParam String key, @RequestHeader("X-API-KEY") String apiKey, HttpServletRequest request) {
+        System.out.println("Loaded API Key from properties: " + adminApiKey);
+        System.out.println("Received API Key in request: " + apiKey);
         if (!adminApiKey.equals(apiKey)) {
             Locale locale = localeResolver.resolveLocale(request);
             String message = messageSource.getMessage("error.unauthorized", null, locale);
