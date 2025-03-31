@@ -12,4 +12,5 @@ public interface DictionaryRepository extends JpaRepository<DictionaryEntity, Lo
     Optional<DictionaryEntity> findByNameAndDeletedFalse(String name);
     @Query("SELECT d FROM DictionaryEntity d LEFT JOIN d.entries e GROUP BY d ORDER BY SUM(e.searchCount) DESC")
     List<DictionaryEntity> findAllSortedByPopularity();
+    //Пятое задание
 }
