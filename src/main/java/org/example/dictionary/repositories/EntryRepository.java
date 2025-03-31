@@ -28,4 +28,5 @@ public interface EntryRepository extends JpaRepository<EntryEntity, Long> {
 
     // Поиск всех записей из конкретного словаря
     Page<EntryEntity> findByDictionaryId(Long idDictionary, Pageable pageable);
+    List<EntryEntity> findAllByDictionaryIdOrderBySearchCountDesc(Long dictionaryId, Pageable pageable);
 }

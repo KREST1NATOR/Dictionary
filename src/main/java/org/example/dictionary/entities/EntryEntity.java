@@ -19,6 +19,9 @@ public class EntryEntity {
     @Column(nullable = false)
     private String value;
 
+    @Column(nullable = false)
+    private int searchCount = 0;
+
     @ManyToOne
     @JoinColumn(name = "dictionary_id", nullable = false)
     private DictionaryEntity dictionary;
@@ -54,5 +57,13 @@ public class EntryEntity {
 
     public void setDictionary(DictionaryEntity dictionary) {
         this.dictionary = dictionary;
+    }
+
+    public int getSearchCount() {
+        return searchCount;
+    }
+
+    public void setSearchCount(int searchCount) {
+        this.searchCount = searchCount;
     }
 }

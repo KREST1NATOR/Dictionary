@@ -2,7 +2,6 @@ package org.example.dictionary;
 
 import org.example.dictionary.entities.DictionaryEntity;
 import org.example.dictionary.entities.EntryEntity;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
@@ -60,9 +59,6 @@ public class DictionaryController {
         };
     }
 
-    /**
-     * Поиск записи в словаре
-     */
     @GetMapping("/search")
     public ResponseEntity<String> search(@RequestParam String type, @RequestParam String key) {
         DictionaryService dictionaryService = getDictionaryService(type);
@@ -75,9 +71,6 @@ public class DictionaryController {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found"));
     }
 
-    /**
-     * Добавление записи в словарь
-     */
     @PostMapping("/add")
     public ResponseEntity<String> addEntry(
             @RequestParam String type,
@@ -100,9 +93,6 @@ public class DictionaryController {
         return ResponseEntity.ok("Added successfully");
     }
 
-    /**
-     * Удаление записи из словаря
-     */
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteEntry(@RequestParam String type, @RequestParam String key, @RequestHeader("X-API-KEY") String apiKey, HttpServletRequest request) {
         System.out.println("Loaded API Key from properties: " + adminApiKey);
@@ -120,9 +110,6 @@ public class DictionaryController {
         return deleted ? ResponseEntity.ok("Deleted successfully") : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found");
     }
 
-    /**
-     * Чтение страницы словаря
-     */
     @GetMapping("/read")
     public ResponseEntity<List<String>> readPage(@RequestParam String type, @RequestParam int page, @RequestParam int size) {
         DictionaryService dictionaryService = getDictionaryService(type);
@@ -132,9 +119,6 @@ public class DictionaryController {
         return ResponseEntity.ok(dictionaryService.readPage(page, size));
     }
 
-    /**
-     * Экспорт словаря в XML
-     */
     @GetMapping(value = "/export", produces = "application/xml")
     public ResponseEntity<StreamingResponseBody> exportToXml(@RequestParam String type) {
         DictionaryService dictionaryService = getDictionaryService(type);
@@ -146,20 +130,11 @@ public class DictionaryController {
                 .body(outputStream -> dictionaryService.exportToXml(outputStream));
     }
 
-    // ========= Методы работы с базой данных ===========
-
-    /**
-     * Создание нового словаря в базе данных
-     */
     @PostMapping("/create")
     public ResponseEntity<DictionaryEntity> createDictionary(@RequestBody DictionaryEntity dictionary) {
         DictionaryEntity savedDictionary = databaseDictionaryService.createDictionary(dictionary);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedDictionary);
     }
-
-    /**
-     * Получение списка всех словарей из БД
-     */
     @GetMapping("/list")
     public ResponseEntity<List<DictionaryEntity>> getDictionaries() {
         List<DictionaryEntity> dictionaries = databaseDictionaryService.getAllDictionaries();
@@ -170,20 +145,6 @@ public class DictionaryController {
     public ResponseEntity<List<DictionaryEntity>> getAllDictionaries() {
         return ResponseEntity.ok(databaseDictionaryService.getAllDictionaries());
     }
-
-    /**
-     * Получение записей словаря с фильтрацией и пагинацией
-     */
-    /*@GetMapping("/entries")
-    public ResponseEntity<List<EntryEntity>> readPage(
-            @RequestParam int page,
-            @RequestParam int size,
-            @RequestParam(required = false, defaultValue = "") String key,
-            @RequestParam(required = false, defaultValue = "") String value) {
-
-        List<EntryEntity> entries = databaseDictionaryService.readPage(page, size, key, value);
-        return ResponseEntity.ok(entries);
-    }*/
 
     @GetMapping("/entries")
     public ResponseEntity<List<EntryEntity>> readPage(
@@ -198,5 +159,11 @@ public class DictionaryController {
 
         // Возвращаем результат
         return ResponseEntity.ok(entries.getContent());
+    }
+
+    @GetMapping("/popular")
+    public ResponseEntity<List<DictionaryEntity>> getPopularDictionaries() {
+        List<DictionaryEntity> dictionaries = databaseDictionaryService.getDictionariesSortedByPopularity();
+        return ResponseEntity.ok(dictionaries);
     }
 }

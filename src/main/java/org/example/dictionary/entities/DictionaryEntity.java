@@ -1,6 +1,8 @@
 package org.example.dictionary.entities;
 
 import jakarta.persistence.*;
+import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "dictionary")
@@ -18,6 +20,9 @@ public class DictionaryEntity {
 
     @Column(nullable = false)
     private boolean deleted = false;
+
+    @OneToMany(mappedBy = "dictionary", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<EntryEntity> entries = new ArrayList<>();
 
     // Геттер и сеттер для id
     public Long getId() {
@@ -52,5 +57,12 @@ public class DictionaryEntity {
 
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public List<EntryEntity> getEntries() {
+        return entries;
+    }
+    public void setEntries(List<EntryEntity> entries) {
+        this.entries = entries;
     }
 }

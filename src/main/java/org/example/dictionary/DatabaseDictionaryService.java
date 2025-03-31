@@ -12,7 +12,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
@@ -29,19 +28,19 @@ public class DatabaseDictionaryService implements DictionaryService {
         this.entryRepository = entryRepository;
     }
 
-    @Override
-    public Optional<String> searchEntry(String key) {
-        return entryRepository.findByKey(key).map(EntryEntity::getValue);
+    public List<DictionaryEntity> getDictionariesSortedByPopularity() {
+        return dictionaryRepository.findAllSortedByPopularity();
     }
 
-    /*@Override
-    public boolean addEntry(String key, String value) {
-        if (entryRepository.existsByKey(key)) {
-            return false;
-        }
-        entryRepository.save(new EntryEntity(key, value));
-        return true;
-    }*/
+    @Override
+    public Optional<String> searchEntry(String key) {
+        Optional<EntryEntity> entry = entryRepository.findByKey(key);
+        entry.ifPresent(e -> {
+            e.setSearchCount(e.getSearchCount() + 1); // Увеличиваем счетчик
+            entryRepository.save(e); // Сохраняем обновленное значение
+        });
+        return entry.map(EntryEntity::getValue);
+    }
 
     @Override
     public boolean addEntry(Long idDictionary, String key, String value) {
@@ -74,13 +73,6 @@ public class DatabaseDictionaryService implements DictionaryService {
                 .map(EntryEntity::getValue)
                 .toList();
     }
-
-    /*@Override
-    public List<EntryEntity> readPage(int page, int size, String key, String value) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<EntryEntity> entryPage = entryRepository.findByKeyContainingAndValueContaining(key, value, pageable);
-        return entryPage.getContent();
-    }*/
 
     @Override
     public Page<EntryEntity> readPage(int page, int size, Long idDictionary, String key, String value) {
