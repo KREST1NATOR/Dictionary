@@ -4,9 +4,11 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.example.dictionary.entities.DictionaryEntity;
 import org.example.dictionary.entities.EntryEntity;
+import org.example.dictionary.DictionaryEvent;
 import org.example.dictionary.repositories.DictionaryRepository;
 import org.example.dictionary.repositories.EntryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,11 +23,15 @@ import java.util.Optional;
 public class DatabaseDictionaryService implements DictionaryService {
     private final DictionaryRepository dictionaryRepository;
     private final EntryRepository entryRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Autowired
-    public DatabaseDictionaryService(DictionaryRepository dictionaryRepository, EntryRepository entryRepository) {
+    public DatabaseDictionaryService(DictionaryRepository dictionaryRepository,
+                                     EntryRepository entryRepository,
+                                     ApplicationEventPublisher eventPublisher) {
         this.dictionaryRepository = dictionaryRepository;
         this.entryRepository = entryRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     public List<DictionaryEntity> getDictionariesSortedByPopularity() {
@@ -53,16 +59,29 @@ public class DatabaseDictionaryService implements DictionaryService {
 
         EntryEntity entry = new EntryEntity(dictionary, key, value);
         entryRepository.save(entry);
+
+        // 🔥 Публикуем событие о добавлении записи
+        eventPublisher.publishEvent(new DictionaryEvent(this, "ADD", key, dictionary.getName()));
+
         return true;
     }
 
     @Override
     @Transactional
     public boolean deleteEntry(String key) {
-        if (!entryRepository.existsByKey(key)) {
+        Optional<EntryEntity> entryOptional = entryRepository.findByKey(key);
+        if (entryOptional.isEmpty()) {
             return false;
         }
-        entryRepository.deleteByKey(key);
+
+        EntryEntity entry = entryOptional.get();
+        String dictionaryName = entry.getDictionary().getName();
+
+        entryRepository.delete(entry);
+
+        // 🔥 Публикуем событие об удалении записи
+        eventPublisher.publishEvent(new DictionaryEvent(this, "DELETE", key, dictionaryName));
+
         return true;
     }
 
@@ -111,5 +130,4 @@ public class DatabaseDictionaryService implements DictionaryService {
     public List<DictionaryEntity> getAllDictionaries() {
         return dictionaryRepository.findAll();
     }
-
 }
