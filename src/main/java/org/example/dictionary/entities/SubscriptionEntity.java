@@ -9,15 +9,19 @@ public class SubscriptionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;  // Уникальный идентификатор подписки
+    private UUID id;
 
     @Column(nullable = false)
-    private String callbackUrl;  // URL, на который будем отправлять уведомления
+    private String callbackUrl;
+
+    @Column(nullable = false)
+    private String accessToken;
 
     public SubscriptionEntity() {}
 
-    public SubscriptionEntity(String callbackUrl) {
+    public SubscriptionEntity(String callbackUrl, String accessToken) {
         this.callbackUrl = callbackUrl;
+        this.accessToken = accessToken;
     }
 
     public UUID getId() {
@@ -34,5 +38,13 @@ public class SubscriptionEntity {
 
     public void setCallbackUrl(String callbackUrl) {
         this.callbackUrl = callbackUrl;
+    }
+
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
     }
 }

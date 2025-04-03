@@ -60,8 +60,8 @@ public class DatabaseDictionaryService implements DictionaryService {
         EntryEntity entry = new EntryEntity(dictionary, key, value);
         entryRepository.save(entry);
 
-        // 🔥 Публикуем событие о добавлении записи
-        eventPublisher.publishEvent(new DictionaryEvent(this, "ADD", key, dictionary.getName()));
+        //Публикуем событие о добавлении записи
+        eventPublisher.publishEvent(new DictionaryEvent(this, "ADD", key, value, dictionary.getName()));
 
         return true;
     }
@@ -76,11 +76,12 @@ public class DatabaseDictionaryService implements DictionaryService {
 
         EntryEntity entry = entryOptional.get();
         String dictionaryName = entry.getDictionary().getName();
+        String value = entry.getValue();
 
         entryRepository.delete(entry);
 
-        // 🔥 Публикуем событие об удалении записи
-        eventPublisher.publishEvent(new DictionaryEvent(this, "DELETE", key, dictionaryName));
+        //Публикуем событие об удалении записи
+        eventPublisher.publishEvent(new DictionaryEvent(this, "DELETE", key, value, dictionaryName));
 
         return true;
     }
