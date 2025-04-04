@@ -154,10 +154,8 @@ public class DictionaryController {
             @RequestParam(required = false, defaultValue = "") String key,
             @RequestParam(required = false, defaultValue = "") String value) {
 
-        // Получаем записи с фильтрацией
         Page<EntryEntity> entries = databaseDictionaryService.readPage(page, size, idDictionary, key, value);
 
-        // Возвращаем результат
         return ResponseEntity.ok(entries.getContent());
     }
 

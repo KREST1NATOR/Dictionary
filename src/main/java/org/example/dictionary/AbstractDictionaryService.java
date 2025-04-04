@@ -3,14 +3,12 @@ package org.example.dictionary;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 public abstract class AbstractDictionaryService implements DictionaryService {
     protected final String resourcePath; // Путь к файлу в ресурсах
-    //String resourcePath = "first_dict.txt";
     protected final File tempFile; // Временный файл для записи
     protected abstract boolean isValidKey(String key);
 
@@ -52,20 +50,6 @@ public abstract class AbstractDictionaryService implements DictionaryService {
             throw new RuntimeException("Error reading dictionary file", e);
         }
     }
-
-    /*@Override
-    public boolean addEntry(String key, String value) {
-        if (!isValidKey(key) || searchEntry(key).isPresent()) {
-            return false;
-        }
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile, true))) {
-            writer.write(key + "=" + value);
-            writer.newLine();
-            return true;
-        } catch (IOException e) {
-            throw new RuntimeException("Error writing to dictionary file", e);
-        }
-    }*/
 
     @Override
     public boolean deleteEntry(String key) {

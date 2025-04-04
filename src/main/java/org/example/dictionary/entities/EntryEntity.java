@@ -10,9 +10,6 @@ public class EntryEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //@Column(nullable = false)
-    //private Long idDictionary;
-
     @Column(nullable = false)
     private String key;
 

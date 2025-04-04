@@ -19,7 +19,6 @@ public class SecondDictionary extends AbstractDictionaryService {
 
     @Override
     public Page<EntryEntity> readPage(int page, int size, Long idDictionary, String key, String value) {
-        // Заглушка или делегирование вызова другому сервису
         return readPage(page, size, idDictionary, key, value);
     }
 

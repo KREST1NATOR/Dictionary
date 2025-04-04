@@ -22,7 +22,6 @@ public class CallbackMessage implements Serializable {
         this.operationTimestamp = operationTimestamp;
     }
 
-    // Геттеры и сеттеры
     public String getCallbackUrl() {
         return callbackUrl;
     }

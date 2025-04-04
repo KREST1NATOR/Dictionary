@@ -24,7 +24,6 @@ public class DictionaryEntity {
     @OneToMany(mappedBy = "dictionary", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<EntryEntity> entries = new ArrayList<>();
 
-    // Геттер и сеттер для id
     public Long getId() {
         return id;
     }
@@ -33,7 +32,6 @@ public class DictionaryEntity {
         this.id = id;
     }
 
-    // Геттер и сеттер для name
     public String getName() {
         return name;
     }
@@ -42,7 +40,6 @@ public class DictionaryEntity {
         this.name = name;
     }
 
-    // Геттер и сеттер для validationRule
     public String getValidationRule() {
         return validationRule;
     }

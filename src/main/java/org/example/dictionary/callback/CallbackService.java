@@ -1,6 +1,5 @@
 package org.example.dictionary.callback;
 
-import org.example.dictionary.callback.CallbackMessage;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
@@ -17,7 +16,12 @@ public class CallbackService {
     }
 
     public void sendCallback(CallbackMessage callbackMessage) {
-        log.info(">> Sending callback message: {}", callbackMessage);
-        rabbitTemplate.convertAndSend("callbackExchange", "callbackRoutingKey", callbackMessage);
+        log.info("Отправка сообщения в RabbitMQ: {}", callbackMessage);
+        try {
+            rabbitTemplate.convertAndSend("callbackExchange", "callbackRoutingKey", callbackMessage);
+            log.info("Сообщение успешно отправлено");
+        } catch (Exception e) {
+            log.error("Ошибка при отправке сообщения в RabbitMQ: {}", e.getMessage(), e);
+        }
     }
 }

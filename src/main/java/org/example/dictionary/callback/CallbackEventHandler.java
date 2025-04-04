@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 @Component
 public class CallbackEventHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(CallbackEventHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(CallbackEventHandler.class);
     private final CallbackService callbackService;
     private final SubscriptionRepository subscriptionRepository;
 
@@ -25,7 +25,7 @@ public class CallbackEventHandler {
 
     @EventListener
     public void handleDictionaryEvent(DictionaryEvent event) {
-        logger.info(">> Received DictionaryEvent: {}", event);
+        log.info("Получено событие DictionaryEvent: {}", event);
 
         List<SubscriptionEntity> subscriptions = subscriptionRepository.findAll();
         for (SubscriptionEntity subscription : subscriptions) {
@@ -38,7 +38,7 @@ public class CallbackEventHandler {
 
 
             );
-            logger.info(">> Sending callback message: {}", message);
+            log.info("Отправляем сообщение коллбэка: {}", message);
             callbackService.sendCallback(message);
         }
     }
