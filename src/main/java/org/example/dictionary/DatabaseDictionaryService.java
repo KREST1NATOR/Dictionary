@@ -4,7 +4,6 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.example.dictionary.entities.DictionaryEntity;
 import org.example.dictionary.entities.EntryEntity;
-import org.example.dictionary.DictionaryEvent;
 import org.example.dictionary.repositories.DictionaryRepository;
 import org.example.dictionary.repositories.EntryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +59,6 @@ public class DatabaseDictionaryService implements DictionaryService {
         EntryEntity entry = new EntryEntity(dictionary, key, value);
         entryRepository.save(entry);
 
-        //Публикуем событие о добавлении записи
         eventPublisher.publishEvent(new DictionaryEvent(this, "ADD", key, value, dictionary.getName()));
 
         return true;
@@ -80,7 +78,6 @@ public class DatabaseDictionaryService implements DictionaryService {
 
         entryRepository.delete(entry);
 
-        //Публикуем событие об удалении записи
         eventPublisher.publishEvent(new DictionaryEvent(this, "DELETE", key, value, dictionaryName));
 
         return true;
